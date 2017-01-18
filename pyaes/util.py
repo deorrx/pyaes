@@ -26,16 +26,11 @@
 # represent arbitrary binary data, we must use the "bytes" object. This method
 # ensures the object behaves as we need it to.
 
-def to_bufferable(binary):
-    return binary
+import sys
 
-def _get_byte(c):
-    return ord(c)
 
-try:
-    xrange
-except:
-
+# Python 3 compatibility
+if sys.version_info > (3, 0):
     def to_bufferable(binary):
         if isinstance(binary, bytes):
             return binary
@@ -43,12 +38,21 @@ except:
 
     def _get_byte(c):
         return c
+else:
+    def to_bufferable(binary):
+        return binary
 
-def append_PKCS7_padding(data):
+
+    def _get_byte(c):
+        return ord(c)
+
+
+def append_pkcs7_padding(data):
     pad = 16 - (len(data) % 16)
     return data + to_bufferable(chr(pad) * pad)
 
-def strip_PKCS7_padding(data):
+
+def strip_pkcs7_padding(data):
     if len(data) % 16 != 0:
         raise ValueError("invalid length")
 
